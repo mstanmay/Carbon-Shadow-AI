@@ -114,7 +114,7 @@ app.include_router(preferences.router, prefix=f"{settings.API_V1_STR}/preference
 
 @app.get(
     "/",
-    summary="Health Check",
+    summary="Root greeting",
     description="Returns API status and documentation link.",
     response_description="API health status object",
 )
@@ -125,3 +125,13 @@ def read_root():
         "version": settings.PROJECT_VERSION,
         "documentation": f"{settings.API_V1_STR}/docs",
     }
+
+
+@app.get(
+    "/healthz",
+    summary="Liveness Check",
+    description="Simple endpoint to monitor container health.",
+    response_description="Liveness status object",
+)
+def liveness_check():
+    return {"status": "ok"}
