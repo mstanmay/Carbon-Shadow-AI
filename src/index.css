@@ -420,3 +420,43 @@
 [dir="rtl"] .flex {
   direction: rtl;
 }
+
+/* ==============================
+   ACCESSIBILITY: SKIP NAVIGATION LINK
+   ============================== */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg-primary);
+  padding: 12px 24px;
+  border-radius: 0 0 10px 10px;
+  font-weight: bold;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  z-index: 9999;
+  transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  border-top: none;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent);
+}
+
+/* ==============================
+   ACCESSIBILITY: MINIMUM FONT SIZE OVERRIDES (Floor at 11px)
+   ============================== */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[10px\] {
+  font-size: 11px !important;
+}
+
+

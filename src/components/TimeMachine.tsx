@@ -126,7 +126,7 @@ export const TimeMachine: React.FC = () => {
                 <div key={idx} className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Timeline dot */}
                   <div className="absolute -left-[29px] top-1.5 w-2.5 h-2.5 rounded-full ring-4"
-                    style={{ background: "var(--accent)", ringColor: "var(--bg-primary)", border: "1px solid var(--accent-glow-strong)" }} />
+                    style={{ background: "var(--accent)", border: "1px solid var(--accent-glow-strong)" }} />
 
                   {/* Left content description */}
                   <div className="flex flex-col gap-1 max-w-md">

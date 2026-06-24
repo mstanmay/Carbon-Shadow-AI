@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Query
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from app.core.database import get_db
@@ -12,9 +12,24 @@ from app.schemas.schemas import (
 from app.agents.graph import run_simulation_flow
 from datetime import datetime, timedelta
 
+from app.core.limiter import limiter
+
 router = APIRouter()
 
-@router.post("/", response_model=SimulationResponse)
+@router.post(
+    "/",
+    response_model=SimulationResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create Carbon Simulation",
+    description="Run an 8-agent LangGraph workflow to predict the environmental impact of a future decision and generate alternative recommendations.",
+    response_description="The created carbon simulation containing the predicted baseline carbon footprint and list of recommendations.",
+    responses={
+        400: {"description": "Invalid input query or analysis failure."},
+        401: {"description": "Unauthorized. Invalid or missing authentication credentials."},
+        422: {"description": "Validation error for input parameters."}
+    }
+)
+@limiter.limit("30/minute")
 def create_simulation(
     sim_in: SimulationCreate,
     request: Request,
@@ -27,8 +42,24 @@ def create_simulation(
     db.add(audit)
     db.commit()
 
-    # Run the 8-Agent LangGraph workflow
-    result = run_simulation_flow(sim_in.query, user_id=current_user.id)
+    # Get user preferences
+    commute_mode = current_user.preferences.commute_mode if current_user.preferences else "car_gasoline"
+    diet_type = current_user.preferences.diet_type if current_user.preferences else "omnivore"
+
+    # Query last 5 simulations for user context
+    past_sims = db.query(CarbonSimulation).filter(
+        CarbonSimulation.user_id == current_user.id
+    ).order_by(CarbonSimulation.created_at.desc()).limit(5).all()
+    previous_simulations = [s.query for s in past_sims]
+
+    # Run the 8-Agent LangGraph workflow with user context
+    result = run_simulation_flow(
+        sim_in.query,
+        user_id=current_user.id,
+        commute_mode=commute_mode,
+        diet_type=diet_type,
+        previous_simulations=previous_simulations
+    )
     
     # Save base simulation
     sim = CarbonSimulation(
@@ -56,17 +87,44 @@ def create_simulation(
     db.refresh(sim)
     return sim
 
-@router.get("/history", response_model=List[SimulationResponse])
+@router.get(
+    "/history",
+    response_model=List[SimulationResponse],
+    summary="Get Simulation History",
+    description="Retrieve a paginated list of past carbon footprint simulations performed by the authenticated user. Total count is returned in the X-Total-Count header.",
+    response_description="A list of the user's past simulations.",
+    responses={
+        401: {"description": "Unauthorized. Invalid or missing credentials."}
+    }
+)
 def get_simulation_history(
+    response: Response,
+    skip: int = Query(default=0, ge=0, description="Number of simulations to skip (offset)"),
+    limit: int = Query(default=20, ge=1, le=100, description="Maximum number of simulations to return"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    sims = db.query(CarbonSimulation).filter(
+    query = db.query(CarbonSimulation).filter(
         CarbonSimulation.user_id == current_user.id
-    ).order_by(CarbonSimulation.created_at.desc()).all()
+    )
+    total_count = query.count()
+    sims = query.order_by(CarbonSimulation.created_at.desc()).offset(skip).limit(limit).all()
+    response.headers["X-Total-Count"] = str(total_count)
+    response.headers["Access-Control-Expose-Headers"] = "X-Total-Count"
     return sims
 
-@router.post("/decision")
+@router.post(
+    "/decision",
+    summary="Commit to Decision",
+    description="Commit to one of the options suggested by a simulation, saving the choice to decision history and updating the user's Carbon Score.",
+    response_description="A success status and the user's updated Carbon Score.",
+    responses={
+        400: {"description": "Invalid choice or calculations."},
+        401: {"description": "Unauthorized. Invalid or missing credentials."},
+        404: {"description": "Simulation not found for the user."},
+        422: {"description": "Validation error for input parameters."}
+    }
+)
 def make_decision(
     decision_in: DecisionCreate,
     request: Request,
@@ -121,7 +179,18 @@ def make_decision(
     db.commit()
     return {"status": "success", "new_score": score_record.score}
 
-@router.post("/time-machine", response_model=TimeMachineResponse)
+@router.post(
+    "/time-machine",
+    response_model=TimeMachineResponse,
+    summary="Carbon Time Machine Simulation",
+    description="Project the environmental impact of a specific decision over 1 month, 3 months, 6 months, and 1 year.",
+    response_description="A timeline of projections showing cumulative carbon savings, regret, and score impact.",
+    responses={
+        400: {"description": "Invalid input query."},
+        401: {"description": "Unauthorized. Invalid or missing credentials."},
+        422: {"description": "Validation error for input parameters."}
+    }
+)
 def time_machine_simulation(
     tm_in: TimeMachineCreate,
     request: Request,
@@ -179,7 +248,16 @@ def time_machine_simulation(
         score_delta=score_delta
     )
 
-@router.get("/copilot/proactive", response_model=List[CopilotNotification])
+@router.get(
+    "/copilot/proactive",
+    response_model=List[CopilotNotification],
+    summary="Get Proactive Copilot Suggestions",
+    description="Retrieve list of personalized and contextual proactive suggestions based on user context and common trends.",
+    response_description="A list of copilot recommendation items.",
+    responses={
+        401: {"description": "Unauthorized. Invalid or missing credentials."}
+    }
+)
 def get_copilot_notifications(
     current_user: User = Depends(get_current_user)
 ):
@@ -211,7 +289,15 @@ def get_copilot_notifications(
         )
     ]
 
-@router.get("/dashboard/stats")
+@router.get(
+    "/dashboard/stats",
+    summary="Get Dashboard Statistics",
+    description="Get consolidated summary stats for the dashboard: carbon score, risk index, total carbon saved, category split, and 6-month historical/predicted forecast.",
+    response_description="Object containing score, risk index, total savings, category split, and forecast list.",
+    responses={
+        401: {"description": "Unauthorized. Invalid or missing credentials."}
+    }
+)
 def get_dashboard_stats(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

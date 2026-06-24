@@ -9,5 +9,7 @@ python-multipart>=0.0.6
 psycopg2-binary>=2.9.0
 langgraph>=0.0.10
 langchain-openai>=0.1.0
+slowapi>=0.1.9
 pytest>=7.0.0
+pytest-cov>=4.0.0
 httpx>=0.24.0

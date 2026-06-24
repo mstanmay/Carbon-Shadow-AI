@@ -50,8 +50,9 @@ export const SettingsView: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Commute Mode */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-medium" style={{ color: "var(--text-muted)" }}>{t("commute_mode")}</label>
+                <label htmlFor="commute-select" className="font-medium" style={{ color: "var(--text-muted)" }}>{t("commute_mode")}</label>
                 <select
+                  id="commute-select"
                   value={commute}
                   onChange={(e) => setCommute(e.target.value)}
                   className="rounded-lg p-2.5 outline-none transition-all"
@@ -66,8 +67,9 @@ export const SettingsView: React.FC = () => {
 
               {/* Diet Profile */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-medium" style={{ color: "var(--text-muted)" }}>{t("diet_profile")}</label>
+                <label htmlFor="diet-select" className="font-medium" style={{ color: "var(--text-muted)" }}>{t("diet_profile")}</label>
                 <select
+                  id="diet-select"
                   value={diet}
                   onChange={(e) => setDiet(e.target.value)}
                   className="rounded-lg p-2.5 outline-none transition-all"
@@ -82,8 +84,9 @@ export const SettingsView: React.FC = () => {
 
               {/* App Theme */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-medium" style={{ color: "var(--text-muted)" }}>{t("app_theme")}</label>
+                <label htmlFor="theme-select" className="font-medium" style={{ color: "var(--text-muted)" }}>{t("app_theme")}</label>
                 <select
+                  id="theme-select"
                   value={theme}
                   onChange={(e) => setTheme(e.target.value as any)}
                   className="rounded-lg p-2.5 outline-none transition-all"
@@ -97,23 +100,25 @@ export const SettingsView: React.FC = () => {
 
               {/* App Language */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-medium" style={{ color: "var(--text-muted)" }}>{t("language")}</label>
+                <label htmlFor="lang-select" className="font-medium" style={{ color: "var(--text-muted)" }}>{t("language")}</label>
                 <select
+                  id="lang-select"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as any)}
                   className="rounded-lg p-2.5 outline-none transition-all"
                   style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "1px solid var(--border)" }}
                 >
                   {languages.map(l => (
-                    <option key={l.code} value={l.code}>{l.nativeName} ({l.name})</option>
+                    <option key={l.code} value={l.code}>{l.native} ({l.name})</option>
                   ))}
                 </select>
               </div>
 
               {/* User Email */}
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label className="font-medium" style={{ color: "var(--text-muted)" }}>{t("account_email")}</label>
+                <label htmlFor="email-input" className="font-medium" style={{ color: "var(--text-muted)" }}>{t("account_email")}</label>
                 <input
+                  id="email-input"
                   type="email"
                   value={user?.email || "demo@carbonshadow.ai"}
                   disabled
@@ -150,7 +155,7 @@ export const SettingsView: React.FC = () => {
           </h3>
 
           <div className="flex flex-col gap-3">
-            <div className="text-[10px]" style={{ color: "var(--text-dim)" }}>
+            <div className="text-[11px]" style={{ color: "var(--text-dim)" }}>
               {t("recent_logs")}
             </div>
             
@@ -158,11 +163,11 @@ export const SettingsView: React.FC = () => {
               {auditLogs.map((log, index) => (
                 <div key={index} className="rounded-lg p-2.5 flex flex-col gap-1"
                   style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)" }}>
-                  <div className="flex justify-between items-center text-[9px]">
+                  <div className="flex justify-between items-center text-[11px]">
                     <span className="font-bold" style={{ color: "var(--text-primary)" }}>{log.action}</span>
                     <span style={{ color: "var(--text-dim)" }}>{log.ip}</span>
                   </div>
-                  <span className="text-[8px]" style={{ color: "var(--text-muted)" }}>{log.timestamp}</span>
+                  <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{log.timestamp}</span>
                 </div>
               ))}
             </div>

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCarbonStore } from "../stores/carbonStore";
-import { useLanguage } from "../contexts/LanguageContext";
 
 export const AIAssistant: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -11,7 +10,6 @@ export const AIAssistant: React.FC = () => {
   const runSimulation = useCarbonStore((state) => state.runSimulation);
   const makeDecision = useCarbonStore((state) => state.makeDecision);
   const isLoading = useCarbonStore((state) => state.isLoading);
-  const { t } = useLanguage();
   
   const bottomRef = useRef<HTMLDivElement>(null);
 

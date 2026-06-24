@@ -50,6 +50,10 @@ export const Hero: React.FC = () => {
   return (
     <div className="relative min-h-[100svh] flex flex-col font-sans overflow-hidden select-none"
       style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
+      <a href="#main-content" className="skip-link">
+        {t("skip_navigation") || "Skip to main content"}
+      </a>
+
       {/* Glow Backdrop */}
       <div className="glow-backdrop" />
 
@@ -72,18 +76,18 @@ export const Hero: React.FC = () => {
       {/* Header Navigation */}
       <header className="relative z-10 flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 border-b"
         style={{ borderColor: "var(--border)" }} role="banner">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setTab("landing")}>
+        <button className="flex items-center gap-2 cursor-pointer transition-all border-none bg-transparent" onClick={() => setTab("landing")} aria-label="Go to home">
           <Logo className="w-5 h-5" style={{ color: "var(--accent)" }} />
           <span className="text-sm font-semibold tracking-tight" style={{ color: "var(--text-secondary)" }}>
             {t("app_name")}
           </span>
-        </div>
+        </button>
 
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-medium tracking-wider uppercase"
           style={{ color: "var(--text-muted)" }} role="navigation">
-          <span className="cursor-pointer transition-colors hover:opacity-100 opacity-60" onClick={() => setTab("timemachine")}>{t("nav_time_machine")}</span>
-          <span className="cursor-pointer transition-colors hover:opacity-100 opacity-60" onClick={() => setTab("dashboard")}>{t("nav_features")}</span>
-          <span className="cursor-pointer transition-colors hover:opacity-100 opacity-60" onClick={() => setTab("analytics")}>{t("nav_analytics")}</span>
+          <button className="cursor-pointer bg-transparent border-none p-0 text-[11px] font-medium tracking-wider uppercase transition-colors hover:opacity-100 opacity-60" style={{ color: "var(--text-muted)" }} onClick={() => setTab("timemachine")}>{t("nav_time_machine")}</button>
+          <button className="cursor-pointer bg-transparent border-none p-0 text-[11px] font-medium tracking-wider uppercase transition-colors hover:opacity-100 opacity-60" style={{ color: "var(--text-muted)" }} onClick={() => setTab("dashboard")}>{t("nav_features")}</button>
+          <button className="cursor-pointer bg-transparent border-none p-0 text-[11px] font-medium tracking-wider uppercase transition-colors hover:opacity-100 opacity-60" style={{ color: "var(--text-muted)" }} onClick={() => setTab("analytics")}>{t("nav_analytics")}</button>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -93,7 +97,7 @@ export const Hero: React.FC = () => {
           {/* Wallet Connect */}
           <button
             onClick={() => setWalletModalOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all"
             style={{
               background: isConnected ? "var(--accent-glow)" : "var(--surface)",
               color: isConnected ? "var(--accent)" : "var(--text-muted)",
@@ -109,7 +113,7 @@ export const Hero: React.FC = () => {
 
           <button
             onClick={handleCTAClick}
-            className="text-[11px] uppercase tracking-wider font-semibold px-4 py-2 rounded-lg transition-all cursor-pointer active:scale-95"
+            className="text-[11px] uppercase tracking-wider font-semibold px-4 py-2 rounded-lg transition-all cursor-pointer active:scale-95 border-none"
             style={{
               background: "var(--text-primary)",
               color: "var(--bg-primary)",
@@ -121,14 +125,14 @@ export const Hero: React.FC = () => {
       </header>
 
       {/* Hero Content Panel */}
-      <main className="flex-1 relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto py-12" role="main">
+      <main id="main-content" className="flex-1 relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto py-12" role="main">
         
         {/* Sparkle Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest"
+          className="mb-6 flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] uppercase font-bold tracking-widest"
           style={{
             background: "var(--surface)",
             border: "1px solid var(--border)",
@@ -166,7 +170,7 @@ export const Hero: React.FC = () => {
               border: "1px solid var(--border)",
             }}>
             {/* Animate Placeholder text */}
-            <div className="absolute left-4 pointer-events-none text-xs sm:text-sm" style={{ color: "var(--text-dim)" }}>
+            <div className="absolute left-4 pointer-events-none text-xs sm:text-sm" style={{ color: "var(--text-dim)" }} aria-live="polite">
               <AnimatePresence mode="wait">
                 {!query && (
                   <motion.span
@@ -194,7 +198,7 @@ export const Hero: React.FC = () => {
             
             <button
               type="submit"
-              className="w-9 h-9 rounded-lg transition-all flex items-center justify-center cursor-pointer z-10 active:scale-95"
+              className="w-9 h-9 rounded-lg transition-all flex items-center justify-center cursor-pointer z-10 active:scale-95 border-none"
               style={{ background: "var(--text-primary)", color: "var(--bg-primary)" }}
               aria-label="Run simulation"
               id="hero-search-submit"
@@ -205,16 +209,16 @@ export const Hero: React.FC = () => {
         </form>
 
         {/* Bottom promo tag */}
-        <div className="mt-8 flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider transition-colors cursor-pointer"
+        <button className="mt-8 flex items-center gap-1 text-[11px] uppercase font-bold tracking-wider transition-colors cursor-pointer bg-transparent border-none"
           style={{ color: "var(--text-dim)" }}
           onClick={handleCTAClick}>
           <span>{t("enter_workspace")}</span>
           <ArrowRight className="w-3.5 h-3.5" />
-        </div>
+        </button>
       </main>
 
       {/* Minimal Footer */}
-      <footer className="relative z-10 py-5 border-t text-[10px] text-center uppercase tracking-widest font-bold"
+      <footer className="relative z-10 py-5 border-t text-[11px] text-center uppercase tracking-widest font-bold"
         style={{ borderColor: "var(--border)", color: "var(--text-dim)" }} role="contentinfo">
         Carbon Shadow AI © 2026. All rights reserved.
       </footer>

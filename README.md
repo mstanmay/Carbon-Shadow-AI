@@ -117,14 +117,25 @@ It implements the premium **Questly** landing page and connects it to a powerful
 ## 🧪 Running Tests
 
 ### Backend Tests:
-Set database variables to SQLite for testing convenience:
+To run the full suite of backend tests (covering API routers, authentication flow, rate-limiting rules, database inputs validation, and wallet integrations):
 ```bash
-set PYTHONPATH=backend
-python -m pytest backend/app/tests -v
+# On Windows PowerShell:
+$env:TESTING="true"; $env:PYTHONPATH="backend"
+python -m pytest backend/app/tests -v --tb=short
+
+# On macOS/Linux:
+TESTING=true PYTHONPATH=backend python -m pytest backend/app/tests -v --tb=short
+```
+
+### Frontend Tests:
+To run the full suite of React/TypeScript frontend tests (covering state store managers, theme/language providers, and component/accessibility tab traversal assertions):
+```bash
+npx vitest run
 ```
 
 ### Frontend Builds:
-Verify TypeScript compiling and Tailwind build bundles:
+Verify TypeScript compilation and Vite build bundles:
 ```bash
 npm run build
 ```
+
